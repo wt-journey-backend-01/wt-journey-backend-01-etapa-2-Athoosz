@@ -10,7 +10,7 @@ const options = {
     },
   },
   apis: [
-    './routes/*.js', // Caminho dos arquivos das rotas para ler os comentários JSDoc
+    './routes/*.js', 
   ],
 };
 

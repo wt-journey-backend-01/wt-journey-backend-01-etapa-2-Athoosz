@@ -190,6 +190,6 @@ casosRouter.get("/casos/status", casosController.getCasosByStatus);
  *       404:
  *         description: Nenhum caso encontrado
  */
-casosRouter.get("/casos/search", casosController.searchCasosByQuery);
+casosRouter.get("/casos/search", casosController.getCasosByTitleOrDescription);
 
 module.exports = casosRouter;

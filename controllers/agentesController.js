@@ -87,4 +87,5 @@ module.exports = {
    updateAgente,
    deleteAgente,
    patchAgente,
+   getAgentesByCargo
 };
