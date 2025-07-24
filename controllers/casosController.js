@@ -1,5 +1,7 @@
 const casosRepository = require("../repositories/casosRepository");
+const agentesRepository = require("../repositories/agentesRepository");
 const { errorResponse } = require("../utils/errorHandler");
+const { isValidUUID } = require("../utils/validators");
 
 function getAllCasos(req, res) {
    const casos = casosRepository.findAll();
@@ -28,6 +30,12 @@ function createCaso(req, res) {
    if (!agenteExiste) {
       return errorResponse(res, 404, "Agente não encontrado para o caso", [
          { agente_id: "Agente inexistente" },
+      ]);
+   }
+
+   if (!isValidUUID(novoCaso.id)) {
+      return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
+         { id: "ID inválido" },
       ]);
    }
 
@@ -69,10 +77,25 @@ function updateCaso(req, res) {
    const { id } = req.params;
    const updatedCaso = req.body;
 
+   if (updatedCaso.id && updatedCaso.id !== id) {
+      return errorResponse(res, 400, "Não é permitido alterar o ID do caso");
+   }
+   
+   const caso = casosRepository.findById(id);
+   if (!caso) {
+      return errorResponse(res, 404, "Caso não encontrado");
+   }
+
    const agenteExiste = agentesRepository.findById(updatedCaso.agente_id);
    if (!agenteExiste) {
       return errorResponse(res, 404, "Agente não encontrado para o caso", [
          { agente_id: "Agente inexistente" },
+      ]);
+   }
+
+   if (!isValidUUID(updatedCaso.id)) {
+      return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
+         { id: "ID inválido" },
       ]);
    }
 
@@ -113,10 +136,25 @@ function patchCaso(req, res) {
    const { id } = req.params;
    const updatedFields = req.body;
 
+   if (updatedFields.id && updatedFields.id !== id) {
+      return errorResponse(res, 400, "Não é permitido alterar o ID do caso");
+   }
+
+   const caso = casosRepository.findById(id);
+   if (!caso) {
+      return errorResponse(res, 404, "Caso não encontrado");
+   }
+
    const agenteExiste = agentesRepository.findById(updatedFields.agente_id);
    if (!agenteExiste) {
       return errorResponse(res, 404, "Agente não encontrado para o caso", [
          { agente_id: "Agente inexistente" },
+      ]);
+   }
+
+   if (!isValidUUID(updatedFields.id)) {
+      return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
+         { id: "ID inválido" },
       ]);
    }
 
@@ -155,6 +193,12 @@ function patchCaso(req, res) {
 
 function deleteCaso(req, res) {
    const { id } = req.params;
+
+   const caso = casosRepository.findById(id);
+   if (!caso) {
+      return errorResponse(res, 404, "Caso não encontrado");
+   }
+
    try {
       casosRepository.deleteCaso(id);
    } catch (error) {
@@ -190,7 +234,7 @@ function getCasosByStatus(req, res) {
          "A query string 'status' é obrigatória para pesquisa"
       );
    }
-   const casos = casosRepository.casoByStatus(status);
+   const casos = casosRepository.findByStatus(status);
    if (!casos || casos.length === 0) {
       return errorResponse(res, 404, "Nenhum caso encontrado com este status");
    }
@@ -206,7 +250,7 @@ function getCasosByTitleOrDescription(req, res) {
          "A query string 'q' é obrigatória para pesquisa"
       );
    }
-   const casos = casosRepository.casoByTitleOrDescription(q);
+   const casos = casosRepository.findByTitleOrDescription(q);
    if (!casos || casos.length === 0) {
       return errorResponse(
          res,

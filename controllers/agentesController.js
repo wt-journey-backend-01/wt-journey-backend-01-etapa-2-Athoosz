@@ -1,5 +1,6 @@
 const agentesRepository = require("../repositories/agentesRepository");
 const { errorResponse } = require("../utils/errorHandler");
+const { isValidUUID, isValidDate } = require("../utils/validators");
 
 function getAllAgentes(req, res) {
    const agentes = agentesRepository.findAll();
@@ -23,6 +24,39 @@ function getAgenteById(req, res) {
 
 function createAgente(req, res) {
    const novoAgente = req.body;
+
+   if (!isValidUUID(novoAgente.id)) {
+      return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
+         { id: "ID inválido" },
+      ]);
+   }
+   if (!novoAgente.nome || novoAgente.nome.trim() === "") {
+      return errorResponse(res, 400, "O campo 'nome' é obrigatório", [
+         { nome: "Nome é obrigatório" },
+      ]);
+   }
+   if (!isValidDate(novoAgente.dataDeIncorporacao)) {
+      return errorResponse(
+         res,
+         400,
+         "O campo 'dataDeIncorporacao' deve ser uma data válida no formato YYYY-MM-DD",
+         [{ dataDeIncorporacao: "Data inválida" }]
+      );
+   }
+   if (isFutureDate(novoAgente.dataDeIncorporacao)) {
+      return errorResponse(
+         res,
+         400,
+         "A data de incorporação não pode ser no futuro",
+         [{ dataDeIncorporacao: "Data futura não permitida" }]
+      );
+   }
+   if (!novoAgente.cargo || novoAgente.cargo.trim() === "") {
+      return errorResponse(res, 400, "O campo 'cargo' é obrigatório", [
+         { cargo: "Cargo é obrigatório" },
+      ]);
+   }
+
    try {
       agentesRepository.createAgente(novoAgente);
    } catch (error) {
@@ -35,9 +69,44 @@ function createAgente(req, res) {
 
 function updateAgente(req, res) {
    const { id } = req.params;
-   const { id: newId, ...updatedAgente } = req.body; // Remove o id do body
-   agentesRepository.updateAgente(id, updatedAgente);
-   
+   const { id: newId, ...updatedAgente } = req.body;
+
+   const agenteExiste = agentesRepository.findById(id);
+   if (!agenteExiste) {
+      return errorResponse(res, 404, "Agente não encontrado");
+   }
+
+   if (newId && newId !== id) {
+      return errorResponse(res, 400, "Não é permitido alterar o ID do agente");
+   }
+
+   if (!updatedAgente.nome || updatedAgente.nome.trim() === "") {
+      return errorResponse(res, 400, "O campo 'nome' é obrigatório", [
+         { nome: "Nome é obrigatório" },
+      ]);
+   }
+   if (!isValidDate(updatedAgente.dataDeIncorporacao)) {
+      return errorResponse(
+         res,
+         400,
+         "O campo 'dataDeIncorporacao' deve ser uma data válida no formato YYYY-MM-DD",
+         [{ dataDeIncorporacao: "Data inválida" }]
+      );
+   }
+   if (isFutureDate(updatedAgente.dataDeIncorporacao)) {
+      return errorResponse(
+         res,
+         400,
+         "A data de incorporação não pode ser no futuro",
+         [{ dataDeIncorporacao: "Data futura não permitida" }]
+      );
+   }
+   if (!updatedAgente.cargo || updatedAgente.cargo.trim() === "") {
+      return errorResponse(res, 400, "O campo 'cargo' é obrigatório", [
+         { cargo: "Cargo é obrigatório" },
+      ]);
+   }
+
    try {
       agentesRepository.updateAgente(id, updatedAgente);
    } catch (error) {
@@ -50,6 +119,12 @@ function updateAgente(req, res) {
 
 function deleteAgente(req, res) {
    const { id } = req.params;
+
+   const agenteExiste = agentesRepository.findById(id);
+   if (!agenteExiste) {
+      return errorResponse(res, 404, "Agente não encontrado");
+   }
+
    try {
       agentesRepository.deleteAgente(id);
    } catch (error) {
@@ -63,6 +138,42 @@ function deleteAgente(req, res) {
 function patchAgente(req, res) {
    const { id } = req.params;
    const { id: newId, ...updatedFields } = req.body; // Remove o id do body
+
+   const agenteExiste = agentesRepository.findById(id);
+   if (!agenteExiste) {
+      return errorResponse(res, 404, "Agente não encontrado");
+   }
+
+   if (newId && newId !== id) {
+      return errorResponse(res, 400, "Não é permitido alterar o ID do agente");
+   }
+
+   if (!updatedFields.nome || updatedFields.nome.trim() === "") {
+      return errorResponse(res, 400, "O campo 'nome' é obrigatório", [
+         { nome: "Nome é obrigatório" },
+      ]);
+   }
+   if (!isValidDate(updatedFields.dataDeIncorporacao)) {
+      return errorResponse(
+         res,
+         400,
+         "O campo 'dataDeIncorporacao' deve ser uma data válida no formato YYYY-MM-DD",
+         [{ dataDeIncorporacao: "Data inválida" }]
+      );
+   }
+   if (isFutureDate(updatedFields.dataDeIncorporacao)) {
+      return errorResponse(
+         res,
+         400,
+         "A data de incorporação não pode ser no futuro",
+         [{ dataDeIncorporacao: "Data futura não permitida" }]
+      );
+   }
+   if (!updatedFields.cargo || updatedFields.cargo.trim() === "") {
+      return errorResponse(res, 400, "O campo 'cargo' é obrigatório", [
+         { cargo: "Cargo é obrigatório" },
+      ]);
+   }
    try {
       agentesRepository.patchAgente(id, updatedFields);
    } catch (error) {

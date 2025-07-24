@@ -31,10 +31,6 @@ function findById(id) {
     return casos.find(caso => caso.id === id);
 }
 
-function findByAgentId(agentId) {
-    return casos.filter(caso => caso.agente_id === agentId);
-}
-
 function addCaso(caso) {
     casos.push(caso);
 }
@@ -61,17 +57,17 @@ function deleteCaso(id) {
     }
 }
 
-function casoAgentId(query) {
+function findByAgentId(query) {
     const q = query.toLowerCase();
     return casos.filter(caso => caso.agente_id.toLowerCase().includes(q));
 }
 
-function casoByStatus(query) {
+function findByStatus(query) {
     const q = query.toLowerCase();
     return casos.filter(caso => caso.status.toLowerCase().includes(q));
 }
 
-function casoByTitleOrDescription(query) {
+function findByTitleOrDescription(query) {
     const q = query.toLowerCase();
     return casos.filter(
         caso =>
@@ -84,11 +80,10 @@ module.exports = {
     findAll,
     findById,
     findByAgentId,
-    casoAgentId,
     addCaso,
     putCaso,
     patchCaso,
     deleteCaso,
-    casoByStatus,
-    casoByTitleOrDescription
+    findByStatus,
+    findByTitleOrDescription
 }
