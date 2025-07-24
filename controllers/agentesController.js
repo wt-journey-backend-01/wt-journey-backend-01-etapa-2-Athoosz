@@ -26,7 +26,7 @@ function createAgente(req, res) {
    try {
       agentesRepository.createAgente(novoAgente);
    } catch (error) {
-     return errorResponse(res, 400, "Erro ao criar agente", [
+      return errorResponse(res, 400, "Erro ao criar agente", [
          { field: "body", message: error.message },
       ]);
    }
@@ -35,11 +35,13 @@ function createAgente(req, res) {
 
 function updateAgente(req, res) {
    const { id } = req.params;
-   const updatedAgente = req.body;
+   const { id: newId, ...updatedAgente } = req.body; // Remove o id do body
+   agentesRepository.updateAgente(id, updatedAgente);
+   
    try {
       agentesRepository.updateAgente(id, updatedAgente);
    } catch (error) {
-     return errorResponse(res, 400, "Erro ao atualizar agente", [
+      return errorResponse(res, 400, "Erro ao atualizar agente", [
          { field: "body", message: error.message },
       ]);
    }
@@ -51,20 +53,20 @@ function deleteAgente(req, res) {
    try {
       agentesRepository.deleteAgente(id);
    } catch (error) {
-     return errorResponse(res, 400, "Erro ao deletar agente", [
+      return errorResponse(res, 400, "Erro ao deletar agente", [
          { field: "id", message: error.message },
       ]);
    }
-   res.status(204).json({ message: "Agente deletado com sucesso" });
+   res.status(204).send();
 }
 
 function patchAgente(req, res) {
    const { id } = req.params;
-   const updatedFields = req.body;
+   const { id: newId, ...updatedFields } = req.body; // Remove o id do body
    try {
       agentesRepository.patchAgente(id, updatedFields);
    } catch (error) {
-     return errorResponse(res, 400, "Erro ao atualizar agente", [
+      return errorResponse(res, 400, "Erro ao atualizar agente", [
          { field: "body", message: error.message },
       ]);
    }
@@ -87,5 +89,5 @@ module.exports = {
    updateAgente,
    deleteAgente,
    patchAgente,
-   getAgentesByCargo
+   getAgentesByCargo,
 };

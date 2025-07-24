@@ -42,7 +42,8 @@ function addCaso(caso) {
 function putCaso(id, updatedCaso) {
     const index = casos.findIndex(caso => caso.id === id);
     if (index !== -1) {
-        casos[index] = { ...casos[index], ...updatedCaso };
+        const { id: _, ...rest } = updatedCaso;
+        casos[index] = { ...casos[index], ...rest };
     }
 }
 

@@ -24,6 +24,13 @@ function getCasoById(req, res) {
 function createCaso(req, res) {
    const novoCaso = req.body;
 
+   const agenteExiste = agentesRepository.findById(novoCaso.agente_id);
+   if (!agenteExiste) {
+      return errorResponse(res, 404, "Agente não encontrado para o caso", [
+         { agente_id: "Agente inexistente" },
+      ]);
+   }
+
    if (!["aberto", "solucionado"].includes(novoCaso.status)) {
       return errorResponse(
          res,
@@ -32,6 +39,22 @@ function createCaso(req, res) {
          [{ status: "Status inválido" }]
       );
    }
+   if (!novoCaso.titulo || novoCaso.titulo.trim() === "") {
+      return errorResponse(res, 400, "O campo 'titulo' é obrigatório", [
+         { field: "titulo", message: "Título é obrigatório" },
+      ]);
+   }
+   if (!novoCaso.descricao || novoCaso.descricao.trim() === "") {
+      return errorResponse(res, 400, "O campo 'descricao' é obrigatório", [
+         { field: "descricao", message: "Descrição é obrigatória" },
+      ]);
+   }
+   if (!novoCaso.agente_id || novoCaso.agente_id.trim() === "") {
+      return errorResponse(res, 400, "O campo 'agente_id' é obrigatório", [
+         { field: "agente_id", message: "ID do agente é obrigatório" },
+      ]);
+   }
+
    try {
       casosRepository.addCaso(novoCaso);
    } catch (error) {
@@ -46,13 +69,35 @@ function updateCaso(req, res) {
    const { id } = req.params;
    const updatedCaso = req.body;
 
-   if (!["aberto", "solucionado"].includes(novoCaso.status)) {
+   const agenteExiste = agentesRepository.findById(updatedCaso.agente_id);
+   if (!agenteExiste) {
+      return errorResponse(res, 404, "Agente não encontrado para o caso", [
+         { agente_id: "Agente inexistente" },
+      ]);
+   }
+
+   if (!["aberto", "solucionado"].includes(updatedCaso.status)) {
       return errorResponse(
          res,
          400,
          "O campo 'status' pode ser somente 'aberto' ou 'solucionado'",
          [{ status: "Status inválido" }]
       );
+   }
+   if (!updatedCaso.titulo || updatedCaso.titulo.trim() === "") {
+      return errorResponse(res, 400, "O campo 'titulo' é obrigatório", [
+         { field: "titulo", message: "Título é obrigatório" },
+      ]);
+   }
+   if (!updatedCaso.descricao || updatedCaso.descricao.trim() === "") {
+      return errorResponse(res, 400, "O campo 'descricao' é obrigatório", [
+         { field: "descricao", message: "Descrição é obrigatória" },
+      ]);
+   }
+   if (!updatedCaso.agente_id || updatedCaso.agente_id.trim() === "") {
+      return errorResponse(res, 400, "O campo 'agente_id' é obrigatório", [
+         { field: "agente_id", message: "ID do agente é obrigatório" },
+      ]);
    }
    try {
       casosRepository.putCaso(id, updatedCaso);
@@ -68,13 +113,35 @@ function patchCaso(req, res) {
    const { id } = req.params;
    const updatedFields = req.body;
 
-   if (!["aberto", "solucionado"].includes(novoCaso.status)) {
+   const agenteExiste = agentesRepository.findById(updatedFields.agente_id);
+   if (!agenteExiste) {
+      return errorResponse(res, 404, "Agente não encontrado para o caso", [
+         { agente_id: "Agente inexistente" },
+      ]);
+   }
+
+   if (!["aberto", "solucionado"].includes(updatedFields.status)) {
       return errorResponse(
          res,
          400,
          "O campo 'status' pode ser somente 'aberto' ou 'solucionado'",
          [{ status: "Status inválido" }]
       );
+   }
+   if (!updatedFields.titulo || updatedFields.titulo.trim() === "") {
+      return errorResponse(res, 400, "O campo 'titulo' é obrigatório", [
+         { field: "titulo", message: "Título é obrigatório" },
+      ]);
+   }
+   if (!updatedFields.descricao || updatedFields.descricao.trim() === "") {
+      return errorResponse(res, 400, "O campo 'descricao' é obrigatório", [
+         { field: "descricao", message: "Descrição é obrigatória" },
+      ]);
+   }
+   if (!updatedFields.agente_id || updatedFields.agente_id.trim() === "") {
+      return errorResponse(res, 400, "O campo 'agente_id' é obrigatório", [
+         { field: "agente_id", message: "ID do agente é obrigatório" },
+      ]);
    }
    try {
       casosRepository.patchCaso(id, updatedFields);
@@ -95,15 +162,19 @@ function deleteCaso(req, res) {
          { field: "id", message: error.message },
       ]);
    }
-   res.status(204).json({ message: "Caso deletado com sucesso" });
+   res.status(204).send();
 }
 
 function getCasosByAgentId(req, res) {
    const { uuid } = req.query;
    if (!uuid || typeof uuid !== "string" || uuid.trim() === "") {
-      return errorResponse(res, 400, "A query string 'uuid' é obrigatória para pesquisa");
+      return errorResponse(
+         res,
+         400,
+         "A query string 'uuid' é obrigatória para pesquisa"
+      );
    }
-   const casos = casosRepository.casoAgentId(uuid);
+   const casos = casosRepository.findByAgentId(uuid);
    if (!casos || casos.length === 0) {
       return errorResponse(res, 404, "Nenhum caso encontrado para este agente");
    }
@@ -113,7 +184,11 @@ function getCasosByAgentId(req, res) {
 function getCasosByStatus(req, res) {
    const { status } = req.query;
    if (!status || typeof status !== "string" || status.trim() === "") {
-      return errorResponse(res, 400, "A query string 'status' é obrigatória para pesquisa");
+      return errorResponse(
+         res,
+         400,
+         "A query string 'status' é obrigatória para pesquisa"
+      );
    }
    const casos = casosRepository.casoByStatus(status);
    if (!casos || casos.length === 0) {
@@ -125,11 +200,19 @@ function getCasosByStatus(req, res) {
 function getCasosByTitleOrDescription(req, res) {
    const { q } = req.query;
    if (!q || typeof q !== "string" || q.trim() === "") {
-      return errorResponse(res, 400, "A query string 'q' é obrigatória para pesquisa");
+      return errorResponse(
+         res,
+         400,
+         "A query string 'q' é obrigatória para pesquisa"
+      );
    }
    const casos = casosRepository.casoByTitleOrDescription(q);
    if (!casos || casos.length === 0) {
-      return errorResponse(res, 404, "Nenhum caso encontrado com este título ou descrição");
+      return errorResponse(
+         res,
+         404,
+         "Nenhum caso encontrado com este título ou descrição"
+      );
    }
    res.status(200).json(casos);
 }
@@ -143,5 +226,5 @@ module.exports = {
    deleteCaso,
    getCasosByAgentId,
    getCasosByStatus,
-   getCasosByTitleOrDescription
+   getCasosByTitleOrDescription,
 };
