@@ -7,6 +7,12 @@ function getAllAgentes(req, res) {
    let agentes;
 
    if (startDate && endDate) {
+      if (!isValidDate(startDate) || !isValidDate(endDate)) {
+         return errorResponse(res, 400, "Datas inválidas. Use o formato YYYY-MM-DD.");
+      }
+      if (new Date(startDate) > new Date(endDate)) {
+         return errorResponse(res, 400, "A data inicial não pode ser maior que a data final.");
+      }
       agentes = agentesRepository.findByDataDeIncorporacaoRange(startDate, endDate);
    } else if (sort === "dataDeIncorporacao") {
       agentes = agentesRepository.findAllSortedByDataDeIncorporacao(order);

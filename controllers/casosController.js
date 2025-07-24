@@ -64,7 +64,7 @@ function createCaso(req, res) {
    }
 
    try {
-      casosRepository.adicionarCaso(novoCaso);
+      casosRepository.addCaso(novoCaso);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao criar caso", [
          { field: "body", message: error.message },
@@ -80,7 +80,7 @@ function updateCaso(req, res) {
    if (updatedCaso.id && updatedCaso.id !== id) {
       return errorResponse(res, 400, "Não é permitido alterar o ID do caso");
    }
-   
+
    const caso = casosRepository.findById(id);
    if (!caso) {
       return errorResponse(res, 404, "Caso não encontrado");
@@ -123,7 +123,7 @@ function updateCaso(req, res) {
       ]);
    }
    try {
-      casosRepository.atualizarCaso(id, updatedCaso);
+      casosRepository.updateCaso(id, updatedCaso);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao atualizar caso", [
          { field: "body", message: error.message },
@@ -145,26 +145,41 @@ function patchCaso(req, res) {
       return errorResponse(res, 404, "Caso não encontrado");
    }
 
-   if (updatedFields.titulo !== undefined && updatedFields.titulo.trim() === "") {
+   if (
+      updatedFields.titulo !== undefined &&
+      updatedFields.titulo.trim() === ""
+   ) {
       return errorResponse(res, 400, "O campo 'titulo' não pode ser vazio", [
          { titulo: "Título inválido" },
       ]);
    }
-   if (updatedFields.descricao !== undefined && updatedFields.descricao.trim() === "") {
+   if (
+      updatedFields.descricao !== undefined &&
+      updatedFields.descricao.trim() === ""
+   ) {
       return errorResponse(res, 400, "O campo 'descricao' não pode ser vazio", [
          { descricao: "Descrição inválida" },
       ]);
    }
-   if (updatedFields.status !== undefined && !["aberto", "solucionado"].includes(updatedFields.status)) {
-      return errorResponse(res, 400, "O campo 'status' deve ser 'aberto' ou 'solucionado'", [
-         { status: "Status inválido" },
-      ]);
+   if (
+      updatedFields.status !== undefined &&
+      !["aberto", "solucionado"].includes(updatedFields.status)
+   ) {
+      return errorResponse(
+         res,
+         400,
+         "O campo 'status' deve ser 'aberto' ou 'solucionado'",
+         [{ status: "Status inválido" }]
+      );
    }
    if (updatedFields.agente_id !== undefined) {
       if (!updatedFields.agente_id || updatedFields.agente_id.trim() === "") {
-         return errorResponse(res, 400, "O campo 'agente_id' não pode ser vazio", [
-            { agente_id: "Agente_id inválido" },
-         ]);
+         return errorResponse(
+            res,
+            400,
+            "O campo 'agente_id' não pode ser vazio",
+            [{ agente_id: "Agente_id inválido" }]
+         );
       }
       const agenteExiste = agentesRepository.findById(updatedFields.agente_id);
       if (!agenteExiste) {
@@ -175,7 +190,7 @@ function patchCaso(req, res) {
    }
 
    try {
-      casosRepository.atualizarParcialCaso(id, updatedFields);
+      casosRepository.patchCaso(id, updatedFields);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao atualizar caso", [
          { field: "body", message: error.message },
@@ -193,7 +208,7 @@ function deleteCaso(req, res) {
    }
 
    try {
-      casosRepository.deletarCaso(id);
+      casosRepository.deleteCaso(id);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao deletar caso", [
          { field: "id", message: error.message },
@@ -204,13 +219,15 @@ function deleteCaso(req, res) {
 
 function getCasosByAgenteId(req, res) {
    const { uuid } = req.query;
-   if (!uuid || typeof uuid !== "string" || uuid.trim() === "") {
+
+   if (!uuid || !isValidUUID(uuid)) {
       return errorResponse(
          res,
          400,
-         "A query string 'uuid' é obrigatória para pesquisa"
+         "A query string 'uuid' deve ser um UUID válido"
       );
    }
+  
    const casos = casosRepository.findByAgenteId(uuid);
    if (!casos || casos.length === 0) {
       return errorResponse(res, 404, "Nenhum caso encontrado para este agente");
@@ -234,7 +251,7 @@ function getCasosByStatus(req, res) {
    res.status(200).json(casos);
 }
 
-function getCasosByTituloOuDescricao(req, res) {
+function getCasosByTituloOrDescricao(req, res) {
    const { q } = req.query;
    if (!q || typeof q !== "string" || q.trim() === "") {
       return errorResponse(
@@ -243,7 +260,7 @@ function getCasosByTituloOuDescricao(req, res) {
          "A query string 'q' é obrigatória para pesquisa"
       );
    }
-   const casos = casosRepository.findByTituloOuDescricao(q);
+   const casos = casosRepository.findByTituloOrDescricao(q);
    if (!casos || casos.length === 0) {
       return errorResponse(
          res,
@@ -263,5 +280,5 @@ module.exports = {
    deleteCaso,
    getCasosByAgenteId,
    getCasosByStatus,
-   getCasosByTituloOuDescricao,
+   getCasosByTituloOrDescricao,
 };

@@ -1,20 +1,20 @@
 const agentes = [
    {
-      id: "401bccf5-cf9e-489d-8412-446cd169a0f1",
+      id: "b7e3a1c2-4d5f-4f8a-9e2a-1c3d4e5f6a7b",
       nome: "Rommel Carneiro",
-      dataDeIncorporacao: "1992/10/04",
+      dataDeIncorporacao: "1992-10-04",
       cargo: "delegado",
    },
    {
-      id: "12345678-1234-5678-1234-567812345678",
+      id: "a2f4c6e8-1b3d-4f5a-8c7e-9d0b1a2c3e4f",
       nome: "João da Silva",
-      dataDeIncorporacao: "2010/05/15",
+      dataDeIncorporacao: "2010-05-15",
       cargo: "investigador",
    },
    {
-      id: "87654321-4321-8765-4321-876543218765",
+      id: "c1d2e3f4-5a6b-7c8d-9e0f-1a2b3c4d5e6f",
       nome: "Maria Oliveira",
-      dataDeIncorporacao: "2015/08/20",
+      dataDeIncorporacao: "2015-08-20",
       cargo: "perito",
    },
 ];

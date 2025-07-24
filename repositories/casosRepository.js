@@ -4,22 +4,21 @@ const casos = [
         titulo: "homicidio",
         descricao: "Disparos foram reportados às 22:33 do dia 10/07/2007 na região do bairro União, resultando na morte da vítima, um homem de 45 anos.",
         status: "aberto",
-        agente_id: "401bccf5-cf9e-489d-8412-446cd169a0f1" 
-    
+        agente_id: "b7e3a1c2-4d5f-4f8a-9e2a-1c3d4e5f6a7b" 
     },
     {
-        id: "a2b3c4d5-e6f7-8g9h-0i1j-2k3l4m5n6o7p",
+        id: "e1d2c3b4-a5f6-4e7d-8c9b-0a1b2c3d4e5f",
         titulo: "furto",
         descricao: "Relato de furto de veículo na madrugada do dia 15/08/2021 no bairro Centro.",
         status: "solucionado",
-        agente_id: "12345678-1234-5678-1234-567812345678"
+        agente_id: "b7e3a1c2-4d5f-4f8a-9e2a-1c3d4e5f6a7b"
     },
     {
-        id: "b1c2d3e4-f5g6-h7i8-j9k0-l1m2n3o4p5q6",
+        id: "a7b8c9d0-e1f2-4a3b-8c7d-6e5f4a3b2c1d",
         titulo: "roubo",
         descricao: "Roubo a mão armada ocorrido no dia 20/09/2022 no bairro Jardim.",
         status: "aberto",
-        agente_id: "23456789-2345-6789-2345-678923456789"
+        agente_id: "a2f4c6e8-1b3d-4f5a-8c7e-9d0b1a2c3e4f"
     }
 ];
 
@@ -31,26 +30,26 @@ function findById(id) {
     return casos.find(caso => caso.id === id);
 }
 
-function adicionarCaso(caso) {
+function addCaso(caso) {
     casos.push(caso);
 }
 
-function atualizarCaso(id, casoAtualizado) {
+function updateCaso(id, updatedCaso) {
     const index = casos.findIndex(caso => caso.id === id);
     if (index !== -1) {
-        const { id: _, ...rest } = casoAtualizado;
+        const { id: _, ...rest } = updatedCaso;
         casos[index] = { ...casos[index], ...rest };
     }
 }
 
-function atualizarParcialCaso(id, camposAtualizados) {
+function patchCaso(id, updatedFields) {
     const caso = findById(id);
     if (caso) {
-        Object.assign(caso, camposAtualizados);
+        Object.assign(caso, updatedFields);
     }
 }
 
-function deletarCaso(id) {
+function deleteCaso(id) {
     const index = casos.findIndex(caso => caso.id === id);
     if (index !== -1) {
         casos.splice(index, 1);
@@ -67,7 +66,7 @@ function findByStatus(query) {
     return casos.filter(caso => caso.status.toLowerCase().includes(q));
 }
 
-function findByTituloOuDescricao(query) {
+function findByTituloOrDescricao(query) {
     const q = query.toLowerCase();
     return casos.filter(
         caso =>
@@ -80,10 +79,10 @@ module.exports = {
     findAll,
     findById,
     findByAgenteId,
-    adicionarCaso,
-    atualizarCaso,
-    atualizarParcialCaso,
-    deletarCaso,
+    addCaso,
+    updateCaso,
+    patchCaso,
+    deleteCaso,
     findByStatus,
-    findByTituloOuDescricao
+    findByTituloOrDescricao
 };
