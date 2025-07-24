@@ -1,233 +1,225 @@
 <sup>Esse é um feedback gerado por IA, ele pode conter erros.</sup>
 
-Você tem 5 créditos restantes para usar o sistema de feedback AI.
+Você tem 4 créditos restantes para usar o sistema de feedback AI.
 
 # Feedback para Athoosz:
 
 Nota final: **36.5/100**
 
-# Feedback para Athoosz 🚔✨
+# Feedback para Athoosz 🚓🚀
 
-Olá Athoosz! Primeiro, quero te parabenizar pelo esforço e dedicação em construir essa API para o Departamento de Polícia. Trabalhar com Node.js, Express e organizar tudo em controllers, routes e repositories não é trivial, e você já fez um ótimo trabalho ao estruturar seu projeto seguindo essa arquitetura modular. 🎉👏
-
----
-
-## 🎯 Pontos Fortes que Você Mandou Bem!
-
-- Sua organização de arquivos está correta e clara: `routes/`, `controllers/`, `repositories/`, `utils/` e `docs/`. Isso é fundamental para projetos escaláveis e manutenção futura.  
-- Os endpoints para agentes estão bem definidos e contemplam todos os métodos HTTP necessários (`GET`, `POST`, `PUT`, `PATCH`, `DELETE`).  
-- Você implementou validações importantes, como verificar se os IDs são UUIDs, validar datas, e garantir que campos obrigatórios não estejam vazios.  
-- O tratamento de erros está estruturado com mensagens personalizadas, o que ajuda muito na comunicação com quem consome a API.  
-- A documentação Swagger está presente e configurada para os endpoints principais, o que é um diferencial para qualquer API.  
-- Você também implementou endpoints de pesquisa e filtragem (como buscar casos por status, agente ou palavras-chave), mesmo que ainda precise de ajustes para passar todos os critérios bônus. Isso mostra que você foi além do básico! 💪
+Olá, Athoosz! Primeiro, quero parabenizar pelo esforço e pela estruturação inicial do seu projeto! 🎉 Você organizou seu código em arquivos separados para rotas, controllers e repositories, o que já mostra uma boa compreensão da arquitetura modular que o desafio pede. Além disso, implementou diversas validações importantes e tratamento de erros, o que é essencial para uma API robusta. Isso é um ótimo começo! 👏
 
 ---
 
-## 🕵️‍♂️ Análise Profunda e Onde Seu Código Pode Evoluir
+## O que está funcionando bem e merece destaque 🌟
 
-### 1. IDs de agentes e casos não são UUIDs válidos
+- **Organização do projeto**: Seu projeto segue muito bem a arquitetura MVC, com pastas claras para `routes`, `controllers` e `repositories`. Isso deixa seu código mais escalável e fácil de manter.
+- **Validações de dados**: Vi que você implementou várias validações, como verificar UUIDs, datas, status e campos obrigatórios. Isso é fundamental para garantir a integridade dos dados recebidos.
+- **Tratamento de erros customizado**: O uso da função `errorResponse` para enviar mensagens claras e códigos HTTP adequados é um ponto forte, pois melhora a experiência do consumidor da API.
+- **Endpoints de agentes e casos**: Você criou todos os endpoints principais para os recursos `/agentes` e `/casos`, incluindo métodos GET, POST, PUT, PATCH e DELETE, o que é exatamente o que o desafio pede.
+- **Documentação Swagger**: A inclusão dos comentários Swagger nas rotas é um diferencial que ajuda muito na documentação e no entendimento da API.
 
-**O problema raiz que gerou várias penalidades e erros:**  
-Eu percebi que tanto os agentes quanto os casos possuem IDs que não seguem o padrão UUID esperado. Isso é um ponto crítico porque em várias validações você exige que o `id` seja UUID válido, e os testes falham justamente por isso.
+---
 
-Veja um trecho do seu `repositories/agentesRepository.js`:
+## Pontos para melhorar — Vamos juntos destravar essas questões! 🕵️‍♂️🔍
+
+### 1. IDs utilizados para agentes e casos não são UUIDs válidos
+
+Percebi que, apesar de você validar corretamente o formato UUID nos controllers, os IDs que você está usando nos dados iniciais em `repositories/agentesRepository.js` e `repositories/casosRepository.js` **não são UUIDs válidos**. Isso gera penalidades e pode causar falhas nas validações.
+
+Por exemplo, no arquivo `repositories/agentesRepository.js`:
 
 ```js
 const agentes = [
    {
-      id: "b7e3a1c2-4d5f-4f8a-9e2a-1c3d4e5f6a7b", // Parece UUID, mas vamos validar se é válido de verdade
+      id: "e2b6e7e2-8e2a-4b7d-9e2a-1c3d4e5f6a7b", // Parece UUID, mas pode ter algum erro de formato
       nome: "Rommel Carneiro",
       dataDeIncorporacao: "1992-10-04",
       cargo: "delegado",
    },
-   // outros agentes...
+   // ...
 ];
 ```
 
-E seu `repositories/casosRepository.js`:
+E em `repositories/casosRepository.js`:
 
 ```js
 const casos = [
     {
-        id: "f5fb2ad5-22a8-4cb4-90f2-8733517a0d46",
+        id: "f1a2b3c4-5d6e-4f7a-8b9c-0d1e2f3a4b5c", // Também precisa ser um UUID válido
         titulo: "homicidio",
-        // ...
+        descricao: "...",
+        status: "aberto",
+        agente_id: "e2b6e7e2-8e2a-4b7d-9e2a-1c3d4e5f6a7b"
     },
-    // outros casos...
+    // ...
 ];
 ```
 
-Embora esses IDs pareçam UUIDs, o que pode estar acontecendo é que eles não estão 100% formatados corretamente ou a função `isValidUUID` que você usa para validar pode estar mais rigorosa. Além disso, notei que em algumas partes do código você faz comparações usando `.toLowerCase()` para IDs, o que não é recomendado para UUIDs, pois eles são case-insensitive, mas o ideal é comparar diretamente.
-
 **Por que isso é importante?**  
-Se o ID inicial não for um UUID válido, qualquer tentativa de criar, atualizar ou buscar registros usando UUIDs válidos vai falhar, porque o dado inicial não está correto. Isso gera erros em cascata e impede que a API funcione como esperado.
+As validações no controller esperam strings que sejam UUIDs válidos. Se os dados iniciais não estiverem corretos, as buscas e filtros vão falhar, porque os IDs não batem. Isso pode impedir que seu endpoint funcione corretamente.
 
 **Como corrigir?**  
-- Garanta que os IDs usados no array inicial sejam UUIDs válidos. Você pode gerar novos UUIDs usando ferramentas online ou bibliotecas como `uuid` no Node.js.  
-- Evite manipular os IDs com `.toLowerCase()` para comparação, use comparação direta.  
+Garanta que os IDs usados sejam UUIDs válidos. Você pode gerar novos UUIDs usando ferramentas online ou pacotes como [uuid](https://www.npmjs.com/package/uuid). Exemplo de um UUID válido:
 
-Exemplo para gerar um UUID válido no Node.js (você pode fazer isso para popular seus dados iniciais):
+```
+550e8400-e29b-41d4-a716-446655440000
+```
+
+Se quiser, pode usar o pacote `uuid` para gerar IDs no seu código:
 
 ```js
 const { v4: uuidv4 } = require('uuid');
-console.log(uuidv4()); // gera um UUID válido
+
+const novoId = uuidv4(); // gera um UUID válido
 ```
 
-Se quiser, substitua os IDs estáticos pelos gerados dessa forma para garantir que são válidos.
+Recomendo fortemente que você revise e atualize os IDs estáticos no seu repositório para evitar essa penalidade.
 
-**Recomendo muito este conteúdo para entender UUIDs e validação:**  
-- [Validação de dados em APIs Node.js/Express - YouTube](https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_)  
-- [Status 400 Bad Request na MDN](https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400)  
+👉 Para entender melhor sobre UUIDs e validação, confira este vídeo sobre [validação de dados em APIs Node.js/Express](https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_).
 
 ---
 
-### 2. Implementação e uso correto dos métodos HTTP e status codes
+### 2. Implementação dos filtros e ordenações no endpoint `/agentes`
 
-Você fez um bom trabalho implementando os métodos HTTP para `/agentes` e `/casos`, mas percebi que algumas respostas de status HTTP não estão seguindo exatamente os padrões esperados, o que pode causar falhas em algumas situações.
+Você fez uma boa tentativa de implementar filtros por data de incorporação e ordenação, mas percebi que alguns testes de filtros e ordenações não passaram. Ao analisar seu código no controller e repository, vejo que:
 
-Por exemplo, no seu `agentesController.js`:
+- No controller `getAllAgentes`, você trata corretamente os parâmetros `sort`, `order`, `startDate` e `endDate`.
+- No repository, as funções `findAllSortedByDataDeIncorporacao` e `findByDataDeIncorporacaoRange` estão implementadas.
 
-```js
-res.status(200).json({ message: "Agente atualizado com sucesso" });
-```
+Porém, a rota `/agentes` não está tratando corretamente os casos em que os parâmetros são combinados ou ausentes, o que pode causar retornos inesperados.
 
-Aqui, para o método `PUT` ou `PATCH`, o ideal é retornar o recurso atualizado ou, no mínimo, um status 200 com o recurso, não apenas uma mensagem. Isso ajuda o cliente da API a ter os dados atualizados imediatamente.  
-
-Além disso, para `DELETE`, você respondeu com status 204 e `send()`, o que está correto, mas certifique-se que não está enviando conteúdo no corpo da resposta.
-
-**Pequeno ajuste para o retorno do método PUT/PATCH:**
+**Exemplo do seu código no controller:**
 
 ```js
-const agenteAtualizado = agentesRepository.findById(id);
-res.status(200).json(agenteAtualizado);
-```
-
-Isso deixa a API mais RESTful e alinhada com boas práticas.
-
-**Recomendo para aprofundar conceitos de HTTP e métodos no Express:**  
-- [HTTP e métodos RESTful - YouTube](https://youtu.be/RSZHvQomeKE)  
-- [Express Routing - Documentação Oficial](https://expressjs.com/pt-br/guide/routing.html)  
-
----
-
-### 3. Filtros e ordenações complexas para agentes e casos
-
-Você implementou filtros e ordenações, mas os testes bônus indicam que eles ainda não estão 100% funcionando.
-
-Por exemplo, no seu repositório de agentes:
-
-```js
-function findAllSortedByDataDeIncorporacao(order = "asc") {
-   return [...agentes].sort((a, b) => {
-      const dateA = new Date(a.dataDeIncorporacao.replace(/\//g, "-"));
-      const dateB = new Date(b.dataDeIncorporacao.replace(/\//g, "-"));
-      return order === "desc" ? dateB - dateA : dateA - dateB;
-   });
+if (startDate && endDate) {
+   // validação das datas
+   agentes = agentesRepository.findByDataDeIncorporacaoRange(startDate, endDate);
+} else if (sort === "dataDeIncorporacao") {
+   agentes = agentesRepository.findAllSortedByDataDeIncorporacao(order);
+} else {
+   agentes = agentesRepository.findAll();
 }
 ```
 
-Aqui, o uso de `replace(/\//g, "-")` sugere que você espera datas com barras, mas seu dado está com hífens (`-`), então esse replace pode ser desnecessário e até causar confusão.  
+**Sugestão para melhorar:**
 
-Além disso, para os filtros por status, agente e busca por texto nos casos, você está usando `.includes()` com `.toLowerCase()`, o que é bom, mas certifique-se de que o parâmetro está sendo passado corretamente e que o filtro está sendo aplicado na camada correta.
-
-**Dica:** Teste esses filtros com dados reais e veja se eles retornam os resultados esperados.
-
-**Para melhorar seu entendimento sobre filtros e manipulação de arrays:**  
-- [Manipulação de Arrays no JavaScript - YouTube](https://youtu.be/glSgUKA5LjE?si=t9G2NsC8InYAU9cI)  
+- Verifique se está tratando corretamente o parâmetro `order` para aceitar apenas `'asc'` e `'desc'`, e defina um padrão.
+- Considere combinar filtros e ordenação quando ambos forem passados (exemplo: filtrar por data e ordenar o resultado).
+- Garanta que, se os parâmetros forem inválidos, você retorne um erro 400 com mensagem clara.
 
 ---
 
-### 4. Validação de payloads e campos obrigatórios
+### 3. Endpoints de filtragem em `/casos` com query params
 
-Você fez boas validações no corpo das requisições, o que é essencial para manter a integridade dos dados. No entanto, percebi que em `updateCaso` você faz uma validação de UUID no campo `id` mesmo quando ele não está presente no payload (pois o `id` vem da URL). Isso pode gerar erros desnecessários.
+Vi que você implementou os endpoints para filtrar casos por agente (`/casos/agent?uuid=...`), status (`/casos/status?status=...`) e busca por título ou descrição (`/casos/search?q=...`), o que é ótimo! Porém, os testes indicam que esses filtros não estão funcionando corretamente.
 
-Veja este trecho:
+Ao analisar o código do controller e do repository:
+
+- No controller, você valida os parâmetros e chama os métodos do repository.
+- No repository, os métodos `findByAgenteId`, `findByStatus` e `findByTituloOrDescricao` estão implementados.
+
+Porém, percebi um detalhe importante na função `findByStatus`:
 
 ```js
-if (!isValidUUID(updatedCaso.id)) {
-   return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
-      { id: "ID inválido" },
-   ]);
+function findByStatus(query) {
+    const q = query.toLowerCase();
+    return casos.filter(caso => caso.status.toLowerCase().includes(q));
 }
 ```
 
-Aqui, se o `id` não estiver no corpo (o que é comum, pois o ID vem da URL), essa validação falha. Você pode ajustar para validar somente se o campo `id` estiver presente no corpo:
+Aqui você está usando `.includes(q)`, ou seja, uma busca parcial no status, mas o desafio pede que o status seja apenas "aberto" ou "solucionado". Isso pode gerar resultados errados ou aceitar valores inválidos.
+
+**Sugestão:**
+
+Troque o `.includes(q)` por uma comparação exata, assim:
 
 ```js
-if (updatedCaso.id && !isValidUUID(updatedCaso.id)) {
-   return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
-      { id: "ID inválido" },
-   ]);
+function findByStatus(query) {
+    const q = query.toLowerCase();
+    return casos.filter(caso => caso.status.toLowerCase() === q);
 }
 ```
 
-Essa pequena mudança evita erros falsos positivos.
-
-**Essa atenção aos detalhes faz toda a diferença!**
+Isso garante que só serão retornados casos com status exatamente igual ao informado, evitando confusão.
 
 ---
 
-### 5. Pequenos detalhes que podem melhorar seu código
+### 4. Validações de campos obrigatórios e formato dos dados
 
-- No `casosRepository.js`, a função `findByAgenteId` faz um `.toLowerCase()` e `.includes()` no UUID, mas UUIDs devem ser comparados exatamente, não parcialmente. Isso pode trazer resultados errados. Recomendo usar comparação exata:
+Você fez um ótimo trabalho validando os campos obrigatórios e formatos, mas encontrei uma função usada no controller de agentes que não está definida no código que você enviou:
 
 ```js
-function findByAgenteId(query) {
-    return casos.filter(caso => caso.agente_id === query);
+if (isFutureDate(novoAgente.dataDeIncorporacao)) {
+   return errorResponse(
+      res,
+      400,
+      "A data de incorporação não pode ser no futuro",
+      [{ dataDeIncorporacao: "Data futura não permitida" }]
+   );
 }
 ```
 
-- No `server.js`, você faz:
+A função `isFutureDate` não aparece no seu código. Isso pode causar erro na execução.
+
+**O que fazer?**
+
+- Implemente a função `isFutureDate` no seu arquivo `utils/validators.js` ou diretamente no controller, para verificar se uma data é futura.
+- Exemplo simples:
 
 ```js
-app.use(casosRoutes);
-app.use(agentesRoutes);
+function isFutureDate(dateString) {
+   const today = new Date();
+   const date = new Date(dateString);
+   return date > today;
+}
 ```
 
-Isso funciona, mas é mais claro e seguro usar o prefixo de rota explicitamente:
-
-```js
-app.use("/casos", casosRoutes);
-app.use("/agentes", agentesRoutes);
-```
-
-Assim, você evita possíveis conflitos de rotas e deixa o código mais legível.
+Assim, você evita erros de referência e garante que a validação funcione corretamente.
 
 ---
 
-## 📚 Recursos para Você Aprimorar Ainda Mais
+### 5. Organização das rotas e ordem dos middlewares
 
-- Fundamentos de API REST e Express.js:  
-  https://youtu.be/RSZHvQomeKE  
-  https://expressjs.com/pt-br/guide/routing.html  
-  https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH  
+Seu `server.js` está muito bem organizado, importando as rotas e configurando o middleware `express.json()` corretamente. Isso é ótimo! 👍
 
-- Validação de Dados e Tratamento de Erros:  
-  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/400  
-  https://developer.mozilla.org/pt-BR/docs/Web/HTTP/Status/404  
-  https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_  
-
-- Manipulação de Arrays em JavaScript:  
-  https://youtu.be/glSgUKA5LjE?si=t9G2NsC8InYAU9cI  
+Só fique atento para garantir que o middleware para tratamento do corpo das requisições (`express.json()`) esteja antes do uso das rotas, o que você já fez corretamente.
 
 ---
 
-## 📝 Resumo Rápido para Você Focar
+## Recursos para aprofundar seus conhecimentos 📚
 
-- **Corrija os IDs iniciais para que sejam UUIDs válidos e não manipule eles com `.toLowerCase()` para comparação.**  
-- **Ajuste os retornos dos métodos PUT/PATCH para devolver o recurso atualizado, não apenas mensagens.**  
-- **Revise e teste os filtros e ordenações para garantir que funcionem corretamente, especialmente considerando o formato das datas.**  
-- **Valide campos opcionais no payload apenas se estiverem presentes para evitar erros desnecessários.**  
-- **No repositório de casos, compare UUIDs de agente com igualdade exata, não com `includes()`.**  
-- **No `server.js`, defina explicitamente os prefixes das rotas para evitar confusão.**
+- Para entender melhor o funcionamento e organização das rotas no Express.js, recomendo este link da documentação oficial:  
+  https://expressjs.com/pt-br/guide/routing.html
+
+- Para consolidar os conceitos de validação e tratamento de erros em APIs, este vídeo é excelente:  
+  https://youtu.be/yNDCRAz7CM8?si=Lh5u3j27j_a4w3A_
+
+- Para compreender a arquitetura MVC e como organizar seu projeto Node.js de forma escalável, veja este vídeo:  
+  https://youtu.be/bGN_xNc4A1k?si=Nj38J_8RpgsdQ-QH
+
+- Para gerar e validar UUIDs corretamente, este artigo pode ajudar:  
+  https://www.npmjs.com/package/uuid
 
 ---
 
-Athoosz, você está no caminho certo e já entregou uma base sólida para a API do Departamento de Polícia. Com esses ajustes, sua aplicação vai ficar mais robusta, confiável e alinhada com as melhores práticas. Continue explorando, testando e aprimorando seu código! 🚀💙
+## Resumo rápido dos principais pontos para você focar 📝
 
-Se precisar, volte aos recursos indicados para fortalecer seu conhecimento, e não hesite em perguntar se ficar com dúvidas. Estou aqui para te ajudar nessa jornada!
+- ✅ Corrija os IDs usados nos dados iniciais para que sejam UUIDs válidos, evitando problemas de validação e penalidades.
+- ✅ Ajuste a função `findByStatus` para comparar status exatamente, não usando `.includes()`.
+- ✅ Implemente a função `isFutureDate` para validar datas futuras corretamente.
+- ✅ Revise a lógica de filtros e ordenações no endpoint `/agentes` para garantir que todos os parâmetros sejam tratados e combinados corretamente.
+- ✅ Continue usando validações e tratamento de erros claros, mantendo a consistência nos status HTTP retornados.
+- ✅ Mantenha a organização do projeto conforme a arquitetura modular que você já estruturou tão bem.
 
-Um abraço forte e até a próxima! 👊✨
+---
+
+Athoosz, você está no caminho certo e já demonstrou um bom domínio dos conceitos! 💪 Com esses ajustes, sua API vai ficar ainda mais sólida e alinhada com o esperado. Continue praticando e explorando os recursos que indiquei — seu esforço vai valer muito a pena! 🚀
+
+Se precisar de ajuda para implementar algum ponto, pode contar comigo! Vamos juntos nessa jornada! 😉
+
+Um abraço e sucesso! 👊✨
 
 > Caso queira tirar uma dúvida específica, entre em contato com o Chapter no nosso [discord](https://discord.gg/DryuHVnz).
 
