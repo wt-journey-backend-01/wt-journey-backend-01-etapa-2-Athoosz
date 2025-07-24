@@ -64,7 +64,7 @@ function createCaso(req, res) {
    }
 
    try {
-      casosRepository.addCaso(novoCaso);
+      casosRepository.adicionarCaso(novoCaso);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao criar caso", [
          { field: "body", message: error.message },
@@ -123,7 +123,7 @@ function updateCaso(req, res) {
       ]);
    }
    try {
-      casosRepository.putCaso(id, updatedCaso);
+      casosRepository.atualizarCaso(id, updatedCaso);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao atualizar caso", [
          { field: "body", message: error.message },
@@ -134,9 +134,9 @@ function updateCaso(req, res) {
 
 function patchCaso(req, res) {
    const { id } = req.params;
-   const updatedFields = req.body;
+   const { id: newId, ...updatedFields } = req.body;
 
-   if (updatedFields.id && updatedFields.id !== id) {
+   if (newId && newId !== id) {
       return errorResponse(res, 400, "Não é permitido alterar o ID do caso");
    }
 
@@ -145,44 +145,37 @@ function patchCaso(req, res) {
       return errorResponse(res, 404, "Caso não encontrado");
    }
 
-   const agenteExiste = agentesRepository.findById(updatedFields.agente_id);
-   if (!agenteExiste) {
-      return errorResponse(res, 404, "Agente não encontrado para o caso", [
-         { agente_id: "Agente inexistente" },
+   if (updatedFields.titulo !== undefined && updatedFields.titulo.trim() === "") {
+      return errorResponse(res, 400, "O campo 'titulo' não pode ser vazio", [
+         { titulo: "Título inválido" },
       ]);
+   }
+   if (updatedFields.descricao !== undefined && updatedFields.descricao.trim() === "") {
+      return errorResponse(res, 400, "O campo 'descricao' não pode ser vazio", [
+         { descricao: "Descrição inválida" },
+      ]);
+   }
+   if (updatedFields.status !== undefined && !["aberto", "solucionado"].includes(updatedFields.status)) {
+      return errorResponse(res, 400, "O campo 'status' deve ser 'aberto' ou 'solucionado'", [
+         { status: "Status inválido" },
+      ]);
+   }
+   if (updatedFields.agente_id !== undefined) {
+      if (!updatedFields.agente_id || updatedFields.agente_id.trim() === "") {
+         return errorResponse(res, 400, "O campo 'agente_id' não pode ser vazio", [
+            { agente_id: "Agente_id inválido" },
+         ]);
+      }
+      const agenteExiste = agentesRepository.findById(updatedFields.agente_id);
+      if (!agenteExiste) {
+         return errorResponse(res, 400, "O agente_id informado não existe", [
+            { agente_id: "Agente não encontrado" },
+         ]);
+      }
    }
 
-   if (!isValidUUID(updatedFields.id)) {
-      return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
-         { id: "ID inválido" },
-      ]);
-   }
-
-   if (!["aberto", "solucionado"].includes(updatedFields.status)) {
-      return errorResponse(
-         res,
-         400,
-         "O campo 'status' pode ser somente 'aberto' ou 'solucionado'",
-         [{ status: "Status inválido" }]
-      );
-   }
-   if (!updatedFields.titulo || updatedFields.titulo.trim() === "") {
-      return errorResponse(res, 400, "O campo 'titulo' é obrigatório", [
-         { field: "titulo", message: "Título é obrigatório" },
-      ]);
-   }
-   if (!updatedFields.descricao || updatedFields.descricao.trim() === "") {
-      return errorResponse(res, 400, "O campo 'descricao' é obrigatório", [
-         { field: "descricao", message: "Descrição é obrigatória" },
-      ]);
-   }
-   if (!updatedFields.agente_id || updatedFields.agente_id.trim() === "") {
-      return errorResponse(res, 400, "O campo 'agente_id' é obrigatório", [
-         { field: "agente_id", message: "ID do agente é obrigatório" },
-      ]);
-   }
    try {
-      casosRepository.patchCaso(id, updatedFields);
+      casosRepository.atualizarParcialCaso(id, updatedFields);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao atualizar caso", [
          { field: "body", message: error.message },
@@ -200,7 +193,7 @@ function deleteCaso(req, res) {
    }
 
    try {
-      casosRepository.deleteCaso(id);
+      casosRepository.deletarCaso(id);
    } catch (error) {
       return errorResponse(res, 400, "Erro ao deletar caso", [
          { field: "id", message: error.message },
@@ -209,7 +202,7 @@ function deleteCaso(req, res) {
    res.status(204).send();
 }
 
-function getCasosByAgentId(req, res) {
+function getCasosByAgenteId(req, res) {
    const { uuid } = req.query;
    if (!uuid || typeof uuid !== "string" || uuid.trim() === "") {
       return errorResponse(
@@ -218,7 +211,7 @@ function getCasosByAgentId(req, res) {
          "A query string 'uuid' é obrigatória para pesquisa"
       );
    }
-   const casos = casosRepository.findByAgentId(uuid);
+   const casos = casosRepository.findByAgenteId(uuid);
    if (!casos || casos.length === 0) {
       return errorResponse(res, 404, "Nenhum caso encontrado para este agente");
    }
@@ -241,7 +234,7 @@ function getCasosByStatus(req, res) {
    res.status(200).json(casos);
 }
 
-function getCasosByTitleOrDescription(req, res) {
+function getCasosByTituloOuDescricao(req, res) {
    const { q } = req.query;
    if (!q || typeof q !== "string" || q.trim() === "") {
       return errorResponse(
@@ -250,7 +243,7 @@ function getCasosByTitleOrDescription(req, res) {
          "A query string 'q' é obrigatória para pesquisa"
       );
    }
-   const casos = casosRepository.findByTitleOrDescription(q);
+   const casos = casosRepository.findByTituloOuDescricao(q);
    if (!casos || casos.length === 0) {
       return errorResponse(
          res,
@@ -268,7 +261,7 @@ module.exports = {
    updateCaso,
    patchCaso,
    deleteCaso,
-   getCasosByAgentId,
+   getCasosByAgenteId,
    getCasosByStatus,
-   getCasosByTitleOrDescription,
+   getCasosByTituloOuDescricao,
 };

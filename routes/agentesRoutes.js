@@ -7,6 +7,31 @@ const agentesController = require("../controllers/agentesController");
  * /agentes:
  *   get:
  *     summary: Lista todos os agentes
+ *     parameters:
+ *       - in: query
+ *         name: sort
+ *         schema:
+ *           type: string
+ *           enum: [dataDeIncorporacao]
+ *         description: Ordena os agentes pela data de incorporação.
+ *       - in: query
+ *         name: order
+ *         schema:
+ *           type: string
+ *           enum: [asc, desc]
+ *         description: Define a ordem da ordenação (ascendente ou descendente).
+ *       - in: query
+ *         name: startDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Data inicial para filtrar agentes (YYYY-MM-DD).
+ *       - in: query
+ *         name: endDate
+ *         schema:
+ *           type: string
+ *           format: date
+ *         description: Data final para filtrar agentes (YYYY-MM-DD).
  *     responses:
  *       200:
  *         description: Lista de agentes
@@ -123,7 +148,7 @@ agentesRouter.patch("/agentes/:id", agentesController.patchAgente);
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       204:
  *         description: Agente deletado com sucesso
  *       400:
  *         description: Erro ao deletar agente

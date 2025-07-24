@@ -123,7 +123,7 @@ casosRouter.patch("/casos/:id", casosController.patchCaso);
  *         schema:
  *           type: string
  *     responses:
- *       200:
+ *       204:
  *         description: Caso deletado com sucesso
  *       400:
  *         description: Erro ao deletar caso
@@ -150,7 +150,7 @@ casosRouter.delete("/casos/:id", casosController.deleteCaso);
  *       404:
  *         description: Nenhum caso encontrado para este agente
  */
-casosRouter.get("/casos/agent", casosController.getCasosByAgentId);
+casosRouter.get("/casos/agent", casosController.getCasosByAgenteId);
 
 /**
  * @swagger
@@ -190,6 +190,6 @@ casosRouter.get("/casos/status", casosController.getCasosByStatus);
  *       404:
  *         description: Nenhum caso encontrado
  */
-casosRouter.get("/casos/search", casosController.getCasosByTitleOrDescription);
+casosRouter.get("/casos/search", casosController.getCasosByTituloOuDescricao);
 
 module.exports = casosRouter;

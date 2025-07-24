@@ -21,43 +21,43 @@ const casos = [
         status: "aberto",
         agente_id: "23456789-2345-6789-2345-678923456789"
     }
-]
+];
 
 function findAll() {
-    return casos
+    return casos;
 }
 
 function findById(id) {
     return casos.find(caso => caso.id === id);
 }
 
-function addCaso(caso) {
+function adicionarCaso(caso) {
     casos.push(caso);
 }
 
-function putCaso(id, updatedCaso) {
+function atualizarCaso(id, casoAtualizado) {
     const index = casos.findIndex(caso => caso.id === id);
     if (index !== -1) {
-        const { id: _, ...rest } = updatedCaso;
+        const { id: _, ...rest } = casoAtualizado;
         casos[index] = { ...casos[index], ...rest };
     }
 }
 
-function patchCaso(id, updatedFields) {
+function atualizarParcialCaso(id, camposAtualizados) {
     const caso = findById(id);
     if (caso) {
-        Object.assign(caso, updatedFields);
+        Object.assign(caso, camposAtualizados);
     }
 }
 
-function deleteCaso(id) {
+function deletarCaso(id) {
     const index = casos.findIndex(caso => caso.id === id);
     if (index !== -1) {
         casos.splice(index, 1);
     }
 }
 
-function findByAgentId(query) {
+function findByAgenteId(query) {
     const q = query.toLowerCase();
     return casos.filter(caso => caso.agente_id.toLowerCase().includes(q));
 }
@@ -67,7 +67,7 @@ function findByStatus(query) {
     return casos.filter(caso => caso.status.toLowerCase().includes(q));
 }
 
-function findByTitleOrDescription(query) {
+function findByTituloOuDescricao(query) {
     const q = query.toLowerCase();
     return casos.filter(
         caso =>
@@ -79,11 +79,11 @@ function findByTitleOrDescription(query) {
 module.exports = {
     findAll,
     findById,
-    findByAgentId,
-    addCaso,
-    putCaso,
-    patchCaso,
-    deleteCaso,
+    findByAgenteId,
+    adicionarCaso,
+    atualizarCaso,
+    atualizarParcialCaso,
+    deletarCaso,
     findByStatus,
-    findByTitleOrDescription
-}
+    findByTituloOuDescricao
+};

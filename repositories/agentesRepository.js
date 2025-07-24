@@ -54,7 +54,26 @@ function deleteAgente(id) {
 }
 
 function getAgenteByCargo(cargo) {
-   return agentes.filter((agente) => agente.cargo.toLowerCase() === cargo.toLowerCase());
+   return agentes.filter(
+      (agente) => agente.cargo.toLowerCase() === cargo.toLowerCase()
+   );
+}
+
+function findAllSortedByDataDeIncorporacao(order = "asc") {
+   return [...agentes].sort((a, b) => {
+      const dateA = new Date(a.dataDeIncorporacao.replace(/\//g, "-"));
+      const dateB = new Date(b.dataDeIncorporacao.replace(/\//g, "-"));
+      return order === "desc" ? dateB - dateA : dateA - dateB;
+   });
+}
+
+function findByDataDeIncorporacaoRange(start, end) {
+   const startDate = new Date(start);
+   const endDate = new Date(end);
+   return agentes.filter((a) => {
+      const date = new Date(a.dataDeIncorporacao.replace(/\//g, "-"));
+      return date >= startDate && date <= endDate;
+   });
 }
 
 module.exports = {
@@ -65,4 +84,6 @@ module.exports = {
    patchAgente,
    deleteAgente,
    getAgenteByCargo,
+   findAllSortedByDataDeIncorporacao,
+   findByDataDeIncorporacaoRange,
 };
