@@ -8,8 +8,8 @@ const swaggerUi = require("swagger-ui-express");
 const swaggerSpec = require("./docs/swagger");
 
 app.use(express.json());
-app.use(casosRoutes);
-app.use(agentesRoutes);
+app.use("/casos", casosRoutes);
+app.use("/agentes", agentesRoutes);
 app.use("/docs", swaggerUi.serve, swaggerUi.setup(swaggerSpec));
 
 app.listen(PORT, () => {

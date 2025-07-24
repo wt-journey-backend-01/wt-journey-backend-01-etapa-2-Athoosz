@@ -8,12 +8,23 @@ function getAllAgentes(req, res) {
 
    if (startDate && endDate) {
       if (!isValidDate(startDate) || !isValidDate(endDate)) {
-         return errorResponse(res, 400, "Datas inválidas. Use o formato YYYY-MM-DD.");
+         return errorResponse(
+            res,
+            400,
+            "Datas inválidas. Use o formato YYYY-MM-DD."
+         );
       }
       if (new Date(startDate) > new Date(endDate)) {
-         return errorResponse(res, 400, "A data inicial não pode ser maior que a data final.");
+         return errorResponse(
+            res,
+            400,
+            "A data inicial não pode ser maior que a data final."
+         );
       }
-      agentes = agentesRepository.findByDataDeIncorporacaoRange(startDate, endDate);
+      agentes = agentesRepository.findByDataDeIncorporacaoRange(
+         startDate,
+         endDate
+      );
    } else if (sort === "dataDeIncorporacao") {
       agentes = agentesRepository.findAllSortedByDataDeIncorporacao(order);
    } else {
@@ -130,7 +141,8 @@ function updateAgente(req, res) {
          { field: "body", message: error.message },
       ]);
    }
-   res.status(200).json({ message: "Agente atualizado com sucesso" });
+   const agenteAtualizado = agentesRepository.findById(id);
+   res.status(200).json(agenteAtualizado);
 }
 
 function deleteAgente(req, res) {
@@ -200,7 +212,8 @@ function patchAgente(req, res) {
          { field: "body", message: error.message },
       ]);
    }
-   res.status(200).json({ message: "Agente atualizado com sucesso" });
+   const agenteAtualizado = agentesRepository.findById(id);
+   res.status(200).json(agenteAtualizado);
 }
 
 function getAgentesByCargo(req, res) {

@@ -38,7 +38,7 @@ const agentesController = require("../controllers/agentesController");
  *       404:
  *         description: Nenhum agente encontrado
  */
-agentesRouter.get("/agentes", agentesController.getAllAgentes);
+agentesRouter.get("/", agentesController.getAllAgentes);
 
 /**
  * @swagger
@@ -58,7 +58,7 @@ agentesRouter.get("/agentes", agentesController.getAllAgentes);
  *       404:
  *         description: Agente não encontrado
  */
-agentesRouter.get("/agentes/:id", agentesController.getAgenteById);
+agentesRouter.get("/:id", agentesController.getAgenteById);
 
 /**
  * @swagger
@@ -77,7 +77,7 @@ agentesRouter.get("/agentes/:id", agentesController.getAgenteById);
  *       400:
  *         description: Erro ao criar agente
  */
-agentesRouter.post("/agentes", agentesController.createAgente);
+agentesRouter.post("/", agentesController.createAgente);
 
 /**
  * @swagger
@@ -105,7 +105,7 @@ agentesRouter.post("/agentes", agentesController.createAgente);
  *       404:
  *         description: Agente não encontrado
  */
-agentesRouter.put("/agentes/:id", agentesController.updateAgente);
+agentesRouter.put("/:id", agentesController.updateAgente);
 
 /**
  * @swagger
@@ -133,7 +133,7 @@ agentesRouter.put("/agentes/:id", agentesController.updateAgente);
  *       404:
  *         description: Agente não encontrado
  */
-agentesRouter.patch("/agentes/:id", agentesController.patchAgente);
+agentesRouter.patch("/:id", agentesController.patchAgente);
 
 /**
  * @swagger
@@ -155,7 +155,7 @@ agentesRouter.patch("/agentes/:id", agentesController.patchAgente);
  *       404:
  *         description: Agente não encontrado
  */
-agentesRouter.delete("/agentes/:id", agentesController.deleteAgente);
+agentesRouter.delete("/:id", agentesController.deleteAgente);
 
 /**
  * @swagger
@@ -175,6 +175,6 @@ agentesRouter.delete("/agentes/:id", agentesController.deleteAgente);
  *       404:
  *         description: Nenhum agente encontrado com este cargo
  */
-agentesRouter.get("/agentes/cargo/:cargo", agentesController.getAgentesByCargo);
+agentesRouter.get("/cargo/:cargo", agentesController.getAgentesByCargo);
 
 module.exports = agentesRouter;

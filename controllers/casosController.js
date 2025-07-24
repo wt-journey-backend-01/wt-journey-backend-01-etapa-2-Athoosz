@@ -93,7 +93,8 @@ function updateCaso(req, res) {
       ]);
    }
 
-   if (!isValidUUID(updatedCaso.id)) {
+   // Só valida se o campo id existir
+   if (updatedCaso.id && !isValidUUID(updatedCaso.id)) {
       return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
          { id: "ID inválido" },
       ]);
@@ -129,7 +130,8 @@ function updateCaso(req, res) {
          { field: "body", message: error.message },
       ]);
    }
-   res.status(200).json({ message: "Caso atualizado com sucesso" });
+   const casoAtualizado = casosRepository.findById(id);
+   res.status(200).json(casoAtualizado);
 }
 
 function patchCaso(req, res) {
@@ -196,7 +198,8 @@ function patchCaso(req, res) {
          { field: "body", message: error.message },
       ]);
    }
-   res.status(200).json({ message: "Caso atualizado com sucesso" });
+   const casoAtualizado = casosRepository.findById(id);
+   res.status(200).json(casoAtualizado);
 }
 
 function deleteCaso(req, res) {
@@ -227,7 +230,7 @@ function getCasosByAgenteId(req, res) {
          "A query string 'uuid' deve ser um UUID válido"
       );
    }
-  
+
    const casos = casosRepository.findByAgenteId(uuid);
    if (!casos || casos.length === 0) {
       return errorResponse(res, 404, "Nenhum caso encontrado para este agente");

@@ -13,7 +13,7 @@ const casosController = require("../controllers/casosController");
  *       404:
  *         description: Nenhum caso encontrado
  */
-casosRouter.get("/casos", casosController.getAllCasos);
+casosRouter.get("/", casosController.getAllCasos);
 
 /**
  * @swagger
@@ -33,7 +33,7 @@ casosRouter.get("/casos", casosController.getAllCasos);
  *       404:
  *         description: Caso não encontrado
  */
-casosRouter.get("/casos/:id", casosController.getCasoById);
+casosRouter.get("/:id", casosController.getCasoById);
 
 /**
  * @swagger
@@ -52,7 +52,7 @@ casosRouter.get("/casos/:id", casosController.getCasoById);
  *       400:
  *         description: Erro ao criar caso
  */
-casosRouter.post("/casos", casosController.createCaso);
+casosRouter.post("/", casosController.createCaso);
 
 /**
  * @swagger
@@ -80,7 +80,7 @@ casosRouter.post("/casos", casosController.createCaso);
  *       404:
  *         description: Caso não encontrado
  */
-casosRouter.put("/casos/:id", casosController.updateCaso);
+casosRouter.put("/:id", casosController.updateCaso);
 
 /**
  * @swagger
@@ -108,7 +108,7 @@ casosRouter.put("/casos/:id", casosController.updateCaso);
  *       404:
  *         description: Caso não encontrado
  */
-casosRouter.patch("/casos/:id", casosController.patchCaso);
+casosRouter.patch("/:id", casosController.patchCaso);
 
 /**
  * @swagger
@@ -130,7 +130,7 @@ casosRouter.patch("/casos/:id", casosController.patchCaso);
  *       404:
  *         description: Caso não encontrado
  */
-casosRouter.delete("/casos/:id", casosController.deleteCaso);
+casosRouter.delete("/:id", casosController.deleteCaso);
 
 /**
  * @swagger
@@ -150,7 +150,7 @@ casosRouter.delete("/casos/:id", casosController.deleteCaso);
  *       404:
  *         description: Nenhum caso encontrado para este agente
  */
-casosRouter.get("/casos/agent", casosController.getCasosByAgenteId);
+casosRouter.get("/agent", casosController.getCasosByAgenteId);
 
 /**
  * @swagger
@@ -170,7 +170,7 @@ casosRouter.get("/casos/agent", casosController.getCasosByAgenteId);
  *       404:
  *         description: Nenhum caso encontrado com este status
  */
-casosRouter.get("/casos/status", casosController.getCasosByStatus);
+casosRouter.get("/status", casosController.getCasosByStatus);
 
 /**
  * @swagger
@@ -190,6 +190,6 @@ casosRouter.get("/casos/status", casosController.getCasosByStatus);
  *       404:
  *         description: Nenhum caso encontrado
  */
-casosRouter.get("/casos/search", casosController.getCasosByTituloOrDescricao);
+casosRouter.get("/search", casosController.getCasosByTituloOrDescricao);
 
 module.exports = casosRouter;

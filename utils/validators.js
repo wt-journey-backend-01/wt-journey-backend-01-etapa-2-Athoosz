@@ -4,11 +4,11 @@ function isValidUUID(uuid) {
 }
 
 
-// Aceita datas no formato YYYY-MM-DD ou YYYY/MM/DD
+// Aceita datas no formato YYYY-MM-DD
 function isValidDate(dateStr) {
    if (typeof dateStr !== "string") return false;
-  
-   const regex = /^\d{4}[-\/]\d{2}[-\/]\d{2}$/;
+
+   const regex = /^\d{4}[-]\d{2}[-]\d{2}$/;
    if (!regex.test(dateStr)) return false;
    
    const normalized = dateStr.replace(/[\/]/g, "-");
