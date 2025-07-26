@@ -247,7 +247,15 @@ function getCasosByStatus(req, res) {
          "A query string 'status' é obrigatória para pesquisa"
       );
    }
-   const casos = casosRepository.findByStatus(status);
+   const statusLower = status.toLowerCase();
+   if (!["aberto", "solucionado"].includes(statusLower)) {
+      return errorResponse(
+         res,
+         400,
+         "O status deve ser 'aberto' ou 'solucionado'"
+      );
+   }
+   const casos = casosRepository.findByStatus(statusLower);
    if (!casos || casos.length === 0) {
       return errorResponse(res, 404, "Nenhum caso encontrado com este status");
    }

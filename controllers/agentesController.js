@@ -1,11 +1,24 @@
 const agentesRepository = require("../repositories/agentesRepository");
 const { errorResponse } = require("../utils/errorHandler");
-const { isValidUUID, isValidDate } = require("../utils/validators");
+const {
+   isValidUUID,
+   isValidDate,
+   isFutureDate,
+} = require("../utils/validators");
 
 function getAllAgentes(req, res) {
-   const { sort, order, startDate, endDate } = req.query;
+   const { sort, order = "asc", startDate, endDate } = req.query;
    let agentes;
 
+   const validOrders = ["asc", "desc"];
+   if (order && !validOrders.includes(order)) {
+      return errorResponse(
+         res,
+         400,
+         "O parâmetro 'order' deve ser 'asc' ou 'desc'"
+      );
+   }
+   const orderParam = order;
    if (startDate && endDate) {
       if (!isValidDate(startDate) || !isValidDate(endDate)) {
          return errorResponse(
@@ -25,10 +38,16 @@ function getAllAgentes(req, res) {
          startDate,
          endDate
       );
-   } else if (sort === "dataDeIncorporacao") {
-      agentes = agentesRepository.findAllSortedByDataDeIncorporacao(order);
    } else {
       agentes = agentesRepository.findAll();
+   }
+
+   if (sort === "dataDeIncorporacao") {
+      agentes = [...agentes].sort((a, b) => {
+         const dateA = new Date(a.dataDeIncorporacao);
+         const dateB = new Date(b.dataDeIncorporacao);
+         return orderParam === "desc" ? dateB - dateA : dateA - dateB;
+      });
    }
 
    if (!agentes || agentes.length === 0) {

@@ -1,24 +1,24 @@
 const casos = [
     {
-        id: "f1a2b3c4-5d6e-4f7a-8b9c-0d1e2f3a4b5c",
+        id: "1c3a05d5-5dc6-446c-a806-a3dfa3346c63",
         titulo: "homicidio",
         descricao: "Disparos foram reportados às 22:33 do dia 10/07/2007 na região do bairro União, resultando na morte da vítima, um homem de 45 anos.",
         status: "aberto",
-        agente_id: "e2b6e7e2-8e2a-4b7d-9e2a-1c3d4e5f6a7b"
+        agente_id: "1d1ad026-7a50-48b7-b0b3-c1719462cce5"
     },
     {
-        id: "e3d4c5b6-a7f8-4e9d-8c0b-1a2b3c4d5e6f",
+        id: "162f30b7-1b46-4a5f-b96a-bcf35a90557d",
         titulo: "furto",
         descricao: "Relato de furto de veículo na madrugada do dia 15/08/2021 no bairro Centro.",
         status: "solucionado",
-        agente_id: "e2b6e7e2-8e2a-4b7d-9e2a-1c3d4e5f6a7b"
+        agente_id: "ad7076c1-2c25-45c2-b07c-bd043d777744"
     },
     {
-        id: "a8b9c0d1-e2f3-4a5b-8c7d-6e5f4a3b2c1d",
+        id: "ae1c0b87-6125-4e10-8194-0bd1dfad99ea",
         titulo: "roubo",
         descricao: "Roubo a mão armada ocorrido no dia 20/09/2022 no bairro Jardim.",
         status: "aberto",
-        agente_id: "a3c1e5b2-4b8d-4e2a-9d2e-2b3c4d5e6f7a"
+        agente_id: "ad7076c1-2c25-45c2-b07c-bd043d777744"
     }
 ];
 
@@ -62,7 +62,7 @@ function findByAgenteId(query) {
 
 function findByStatus(query) {
     const q = query.toLowerCase();
-    return casos.filter(caso => caso.status.toLowerCase().includes(q));
+    return casos.filter(caso => caso.status.toLowerCase() === q);
 }
 
 function findByTituloOrDescricao(query) {
