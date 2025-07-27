@@ -43,11 +43,7 @@ function getAllAgentes(req, res) {
    }
 
    if (sort === "dataDeIncorporacao") {
-      agentes = [...agentes].sort((a, b) => {
-         const dateA = new Date(a.dataDeIncorporacao);
-         const dateB = new Date(b.dataDeIncorporacao);
-         return orderParam === "desc" ? dateB - dateA : dateA - dateB;
-      });
+      agentes = agentesRepository.findAllSortedByDataDeIncorporacao(orderParam);
    }
 
    if (!agentes || agentes.length === 0) {
