@@ -1,23 +1,4 @@
-const agentes = [
-   {
-      id: "ad7076c1-2c25-45c2-b07c-bd043d777744",
-      nome: "Rommel Carneiro",
-      dataDeIncorporacao: "1992-10-04",
-      cargo: "delegado",
-   },
-   {
-      id: "900524cf-8a63-4d0b-94cc-8fe2b9973ea7",
-      nome: "João da Silva",
-      dataDeIncorporacao: "2010-05-15",
-      cargo: "investigador",
-   },
-   {
-      id: "1d1ad026-7a50-48b7-b0b3-c1719462cce5",
-      nome: "Maria Oliveira",
-      dataDeIncorporacao: "2015-08-20",
-      cargo: "perito",
-   },
-];
+const agentes = [];
 
 function findAll() {
    return agentes;

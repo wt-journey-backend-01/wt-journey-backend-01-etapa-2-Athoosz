@@ -1,4 +1,5 @@
 const agentesRepository = require("../repositories/agentesRepository");
+const { v4: uuidv4 } = require("uuid");
 const { errorResponse } = require("../utils/errorHandler");
 const {
    isValidUUID,
@@ -8,42 +9,29 @@ const {
 
 function getAllAgentes(req, res) {
    const { sort, order = "asc", startDate, endDate } = req.query;
-   let agentes;
+   let agentes = agentesRepository.findAll();
 
-   const validOrders = ["asc", "desc"];
-   if (order && !validOrders.includes(order)) {
-      return errorResponse(
-         res,
-         400,
-         "O parâmetro 'order' deve ser 'asc' ou 'desc'"
-      );
-   }
-   const orderParam = order;
+   // Filtro por data
    if (startDate && endDate) {
       if (!isValidDate(startDate) || !isValidDate(endDate)) {
-         return errorResponse(
-            res,
-            400,
-            "Datas inválidas. Use o formato YYYY-MM-DD."
-         );
+         return errorResponse(res, 400, "Datas inválidas. Use o formato YYYY-MM-DD.");
       }
       if (new Date(startDate) > new Date(endDate)) {
-         return errorResponse(
-            res,
-            400,
-            "A data inicial não pode ser maior que a data final."
-         );
+         return errorResponse(res, 400, "A data inicial não pode ser maior que a data final.");
       }
-      agentes = agentesRepository.findByDataDeIncorporacaoRange(
-         startDate,
-         endDate
-      );
-   } else {
-      agentes = agentesRepository.findAll();
+      agentes = agentes.filter(a => {
+         const data = new Date(a.dataDeIncorporacao);
+         return data >= new Date(startDate) && data <= new Date(endDate);
+      });
    }
 
+   // Ordenação
    if (sort === "dataDeIncorporacao") {
-      agentes = agentesRepository.findAllSortedByDataDeIncorporacao(orderParam);
+      agentes = agentes.sort((a, b) => {
+         const dateA = new Date(a.dataDeIncorporacao);
+         const dateB = new Date(b.dataDeIncorporacao);
+         return order === "desc" ? dateB - dateA : dateA - dateB;
+      });
    }
 
    if (!agentes || agentes.length === 0) {
@@ -66,6 +54,10 @@ function getAgenteById(req, res) {
 
 function createAgente(req, res) {
    const novoAgente = req.body;
+
+   if (!novoAgente.id) {
+      novoAgente.id = uuidv4();
+   }
 
    if (!isValidUUID(novoAgente.id)) {
       return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [

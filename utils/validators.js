@@ -4,8 +4,6 @@ function isValidUUID(uuid) {
    return validate(uuid) && version(uuid) === 4;
 }
 
-
-// Aceita datas no formato YYYY-MM-DD
 function isValidDate(dateStr) {
    if (typeof dateStr !== "string") return false;
 

@@ -2,6 +2,7 @@ const casosRepository = require("../repositories/casosRepository");
 const agentesRepository = require("../repositories/agentesRepository");
 const { errorResponse } = require("../utils/errorHandler");
 const { isValidUUID } = require("../utils/validators");
+const { v4: uuidv4 } = require("uuid");
 
 function getAllCasos(req, res) {
    const casos = casosRepository.findAll();
@@ -25,6 +26,10 @@ function getCasoById(req, res) {
 
 function createCaso(req, res) {
    const novoCaso = req.body;
+
+   if (!novoCaso.id) {
+      novoCaso.id = uuidv4();
+   }
 
    const agenteExiste = agentesRepository.findById(novoCaso.agente_id);
    if (!agenteExiste) {
