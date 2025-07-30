@@ -14,12 +14,20 @@ function getAllAgentes(req, res) {
    // Filtro por data
    if (startDate && endDate) {
       if (!isValidDate(startDate) || !isValidDate(endDate)) {
-         return errorResponse(res, 400, "Datas inválidas. Use o formato YYYY-MM-DD.");
+         return errorResponse(
+            res,
+            400,
+            "Datas inválidas. Use o formato YYYY-MM-DD."
+         );
       }
       if (new Date(startDate) > new Date(endDate)) {
-         return errorResponse(res, 400, "A data inicial não pode ser maior que a data final.");
+         return errorResponse(
+            res,
+            400,
+            "A data inicial não pode ser maior que a data final."
+         );
       }
-      agentes = agentes.filter(a => {
+      agentes = agentes.filter((a) => {
          const data = new Date(a.dataDeIncorporacao);
          return data >= new Date(startDate) && data <= new Date(endDate);
       });
@@ -54,7 +62,20 @@ function getAgenteById(req, res) {
 
 function createAgente(req, res) {
    const novoAgente = req.body;
-
+   
+   if (
+      !novoAgente ||
+      typeof novoAgente !== "object" ||
+      Array.isArray(novoAgente) ||
+      Object.keys(novoAgente).length === 0
+   ) {
+      return errorResponse(
+         res,
+         400,
+         "Payload inválido: deve ser um objeto com ao menos um campo para atualização"
+      );
+   }
+   
    if (!novoAgente.id) {
       novoAgente.id = uuidv4();
    }
@@ -104,6 +125,19 @@ function createAgente(req, res) {
 function updateAgente(req, res) {
    const { id } = req.params;
    const { id: newId, ...updatedAgente } = req.body;
+   
+   if (
+      !updatedAgente ||
+      typeof updatedAgente !== "object" ||
+      Array.isArray(updatedAgente) ||
+      Object.keys(updatedAgente).length === 0
+   ) {
+      return errorResponse(
+         res,
+         400,
+         "Payload inválido: deve ser um objeto com ao menos um campo para atualização"
+      );
+   }
 
    const agenteExiste = agentesRepository.findById(id);
    if (!agenteExiste) {
@@ -173,6 +207,19 @@ function deleteAgente(req, res) {
 function patchAgente(req, res) {
    const { id } = req.params;
    const { id: newId, ...updatedFields } = req.body;
+
+   if (
+      !updatedFields ||
+      typeof updatedFields !== "object" ||
+      Array.isArray(updatedFields) ||
+      Object.keys(updatedFields).length === 0
+   ) {
+      return errorResponse(
+         res,
+         400,
+         "Payload inválido: deve ser um objeto com ao menos um campo para atualização"
+      );
+   }
 
    const agenteExiste = agentesRepository.findById(id);
    if (!agenteExiste) {

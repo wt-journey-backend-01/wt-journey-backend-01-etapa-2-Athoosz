@@ -27,6 +27,19 @@ function getCasoById(req, res) {
 function createCaso(req, res) {
    const novoCaso = req.body;
 
+   if (
+      !novoCaso ||
+      typeof novoCaso !== "object" ||
+      Array.isArray(novoCaso) ||
+      Object.keys(novoCaso).length === 0
+   ) {
+      return errorResponse(
+         res,
+         400,
+         "Payload inválido: deve ser um objeto com ao menos um campo para atualização"
+      );
+   }
+
    if (!novoCaso.id) {
       novoCaso.id = uuidv4();
    }
@@ -82,6 +95,19 @@ function updateCaso(req, res) {
    const { id } = req.params;
    const updatedCaso = req.body;
 
+   if (
+      !updatedCaso ||
+      typeof updatedCaso !== "object" ||
+      Array.isArray(updatedCaso) ||
+      Object.keys(updatedCaso).length === 0
+   ) {
+      return errorResponse(
+         res,
+         400,
+         "Payload inválido: deve ser um objeto com ao menos um campo para atualização"
+      );
+   }
+
    if (updatedCaso.id && updatedCaso.id !== id) {
       return errorResponse(res, 400, "Não é permitido alterar o ID do caso");
    }
@@ -98,7 +124,6 @@ function updateCaso(req, res) {
       ]);
    }
 
-   // Só valida se o campo id existir
    if (updatedCaso.id && !isValidUUID(updatedCaso.id)) {
       return errorResponse(res, 400, "O campo 'id' deve ser um UUID válido", [
          { id: "ID inválido" },
@@ -142,6 +167,19 @@ function updateCaso(req, res) {
 function patchCaso(req, res) {
    const { id } = req.params;
    const { id: newId, ...updatedFields } = req.body;
+
+  if (
+      !updatedFields ||
+      typeof updatedFields !== "object" ||
+      Array.isArray(updatedFields) ||
+      Object.keys(updatedFields).length === 0
+   ) {
+      return errorResponse(
+         res,
+         400,
+         "Payload inválido: deve ser um objeto com ao menos um campo para atualização"
+      );
+   }
 
    if (newId && newId !== id) {
       return errorResponse(res, 400, "Não é permitido alterar o ID do caso");
